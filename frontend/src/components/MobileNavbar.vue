@@ -59,7 +59,18 @@
             </q-list>
           </q-btn-dropdown>
         </q-item>
-
+        <!-- Dark Mode Toggle -->
+        <q-item>
+          <q-btn
+            flat
+            dense
+            @click="$q.dark.toggle()"
+            :icon="$q.dark.isActive ? 'light_mode' : 'dark_mode'"
+            :label="$q.dark.isActive ? 'Koyu' : 'Açık'"
+            :no-caps="true"
+            class="full-width"
+          />
+        </q-item>
         <!-- Mobile Profile Section -->
         <q-item-label header class="text-weight-bold">Profile</q-item-label>
         <q-item clickable>

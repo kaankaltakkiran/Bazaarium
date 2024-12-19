@@ -30,6 +30,17 @@
       </q-list>
     </q-btn-dropdown>
 
+    <!-- Dark Mode Toggle -->
+    <q-btn
+      flat
+      dense
+      @click="$q.dark.toggle()"
+      :icon="$q.dark.isActive ? 'light_mode' : 'dark_mode'"
+      :label="$q.dark.isActive ? 'Koyu' : 'Açık'"
+      :no-caps="true"
+      class="q-mx-md"
+    />
+
     <!-- Shopping Cart -->
     <q-btn dense round icon="shopping_bag" class="q-ml-md">
       <q-badge color="red" floating>4</q-badge>
