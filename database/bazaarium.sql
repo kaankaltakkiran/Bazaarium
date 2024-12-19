@@ -1,8 +1,3 @@
-# Database Notlarım
-
-## Bazarium Sql Yapısı
-
-```sql
 -- USERS TABLOSU
 CREATE TABLE `users` (
   `id` INTEGER PRIMARY KEY,
@@ -165,10 +160,3 @@ CREATE TABLE `payment_details` (
   `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   FOREIGN KEY (`order_id`) REFERENCES `order_details`(`id`)
 );
-```
-
-### [Database Diagramı](https://dbdiagram.io/d/Bazarrium-67630eff84c74107271e1626)
-
-![Database Diagram](./image/Bazarrium.png)
-
-> **Note:** [Bazarriums](https://dbdiagram.io/d/eCommerce-Database-Design-65521cb47d8bbd6465131f01) için daha gelişmiş database yapısı .
