@@ -107,6 +107,12 @@
               <div class="full-width q-mt-lg">
                 <q-btn label="Register" type="submit" color="primary" class="full-width" />
               </div>
+
+              <!-- Login Link -->
+              <div class="text-center q-mt-md">
+                Already have an account?
+                <router-link to="/login" class="text-primary">Log in</router-link>
+              </div>
             </q-form>
           </q-card-section>
         </q-card>
