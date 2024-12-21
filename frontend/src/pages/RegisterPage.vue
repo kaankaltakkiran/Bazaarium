@@ -56,9 +56,6 @@
                 </template>
               </q-input>
 
-              <!-- Birth Date -->
-              <q-input v-model="form.birth_of_date" label="Date of Birth" filled type="date" />
-
               <!-- City and District Selection -->
               <q-select
                 v-model="form.city"
@@ -127,21 +124,16 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
+import { api } from 'src/boot/axios' // Axios örneğini içe aktarın
 
 const isPwd = ref(true)
 
-const cities = ['Istanbul', 'Ankara', 'Izmir', 'Bursa', 'Antalya']
-const districtMap = {
-  Istanbul: ['Kadikoy', 'Besiktas', 'Sisli', 'Uskudar', 'Fatih'],
-  Ankara: ['Cankaya', 'Kecioren', 'Yenimahalle', 'Mamak', 'Etimesgut'],
-  Izmir: ['Konak', 'Karsiyaka', 'Bornova', 'Buca', 'Cigli'],
-  Bursa: ['Nilufer', 'Osmangazi', 'Yildirim', 'Gemlik', 'Mudanya'],
-  Antalya: ['Muratpasa', 'Kepez', 'Konyaalti', 'Manavgat', 'Alanya'],
-}
-
+// Şehirler ve ilçeler için state'ler
+const cities = ref([])
 const districts = ref<string[]>([])
 
+// Form verileri
 const form = ref({
   avatar: null,
   first_name: '',
@@ -156,13 +148,48 @@ const form = ref({
   district: '',
 })
 
-const updateDistricts = (city: string) => {
-  districts.value = districtMap[city as keyof typeof districtMap] || []
+// Şehirleri API'den çek
+const fetchCities = async () => {
+  try {
+    const response = await api.get('/api.php')
+    if (response.data && response.data.status === 'success') {
+      cities.value = response.data.data.map((city: { id: number; il_adi: string }) => ({
+        label: city.il_adi,
+        value: city.id,
+      }))
+    }
+  } catch (error) {
+    console.error('Error fetching cities:', error)
+  }
+}
+
+interface CityOption {
+  label: string
+  value: number
+}
+
+const updateDistricts = async (selectedCity: CityOption) => {
+  try {
+    const cityId = selectedCity.value
+    const response = await api.get(`/api.php?il_id=${cityId}`)
+    if (response.data && response.data.status === 'success') {
+      districts.value = response.data.data.map((district: { id: number; ilce_adi: string }) => ({
+        label: district.ilce_adi,
+        value: district.id,
+      }))
+    }
+  } catch (error) {
+    console.error('Error fetching districts:', error)
+  }
   form.value.district = ''
 }
 
+// Şehirler yüklendiğinde API çağrısını yap
+onMounted(() => {
+  fetchCities()
+})
+
 const onSubmit = () => {
-  // Handle form submission here
   console.log('Form submitted:', form.value)
 }
 </script>
