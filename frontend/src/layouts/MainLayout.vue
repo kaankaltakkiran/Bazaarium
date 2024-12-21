@@ -7,25 +7,16 @@
         <q-btn v-if="$q.screen.lt.md" dense flat round icon="menu" @click="toggleLeftDrawer" />
 
         <!-- Logo -->
-        <q-toolbar-title>
-          <div
+        <q-toolbar-title class="text-center">
+          <span
             :class="{
-              'absolute-center text-center': $q.screen.gt.sm,
-              'row items-center': $q.screen.lt.md,
+              'text-h6': $q.screen.gt.xs,
+              'text-subtitle1': $q.screen.xs,
             }"
           >
-            <span
-              :class="{
-                'text-h6': $q.screen.gt.xs,
-                'text-subtitle1': $q.screen.xs,
-              }"
-            >
-              Bazaarium
-            </span>
-          </div>
+            Bazaarium
+          </span>
         </q-toolbar-title>
-
-        <q-space />
 
         <!-- Desktop Navigation Component -->
         <DesktopNavbar v-if="$q.screen.gt.sm" />

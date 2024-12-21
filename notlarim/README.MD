@@ -18,3 +18,5 @@
             class="q-mx-md"
           />
 ```
+
+- Register sayfasında alertler,kurallar yeniden gözden geçirilecek.

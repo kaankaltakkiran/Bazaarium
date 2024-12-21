@@ -3,8 +3,9 @@
   <div class="row items-center">
     <!-- Tab Menu -->
     <q-tabs v-model="tab" shrink>
-      <q-tab name="tab1" label="Ana Sayfa" />
-      <q-tab name="tab2" label="Mağzalar" />
+      <q-route-tab to="/" name="home" label="Ana Sayfa" />
+      <q-route-tab to="/vendors" name="vendors" label="Mağzalar" />
+      <q-route-tab to="/register" name="register" label="Register" />
     </q-tabs>
 
     <!--Language Choice -->
@@ -64,6 +65,8 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
+import { useRoute } from 'vue-router'
 
-const tab = ref<string>('tab1')
+const route = useRoute()
+const tab = ref(route.path)
 </script>
