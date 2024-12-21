@@ -50,6 +50,19 @@
           <q-item-section>Register</q-item-section>
         </q-item>
 
+        <q-item
+          clickable
+          :to="{ path: '/login' }"
+          v-close-popup
+          :active="route.path === '/login'"
+          active-class="text-primary"
+        >
+          <q-item-section avatar>
+            <q-icon name="login" />
+          </q-item-section>
+          <q-item-section>Login</q-item-section>
+        </q-item>
+
         <q-item>
           <!--Language Choice -->
           <q-btn-dropdown
