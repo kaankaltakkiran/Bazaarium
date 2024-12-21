@@ -8,12 +8,17 @@
 
             <q-form @submit="onSubmit" class="q-gutter-md q-mt-lg">
               <!-- Name Fields -->
-
               <q-input
                 v-model="form.first_name"
                 label="First Name *"
                 filled
                 :rules="[(val) => !!val || 'First name is required']"
+              />
+              <q-input
+                v-model="form.last_name"
+                label="Last Name *"
+                filled
+                :rules="[(val) => !!val || 'Last name is required']"
               />
 
               <!-- Username and Email -->
