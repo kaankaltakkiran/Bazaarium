@@ -39,6 +39,15 @@
                 ]"
               />
 
+              <!-- Birth Date -->
+              <q-input
+                v-model="form.birth_of_date"
+                label="Birth Date *"
+                filled
+                type="date"
+                :rules="[(val) => !!val || 'Birth date is required']"
+              />
+
               <!-- Password -->
               <q-input
                 v-model="form.password"
@@ -126,6 +135,11 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { api } from 'src/boot/axios' // Axios örneğini içe aktarın
+import { useQuasar } from 'quasar'
+import { useRouter } from 'vue-router'
+
+const $q = useQuasar()
+const router = useRouter()
 
 const isPwd = ref(true)
 
@@ -133,8 +147,28 @@ const isPwd = ref(true)
 const cities = ref([])
 const districts = ref<string[]>([])
 
-// Form verileri
-const form = ref({
+// Add these interfaces
+interface CityOption {
+  label: string
+  value: number
+}
+
+interface FormData {
+  avatar: File | null
+  first_name: string
+  last_name: string
+  username: string
+  email: string
+  password: string
+  birth_of_date: string
+  phone_number: string
+  user_type: string
+  city: CityOption | string
+  district: CityOption | string
+}
+
+// Update the form ref with proper typing
+const form = ref<FormData>({
   avatar: null,
   first_name: '',
   last_name: '',
@@ -163,11 +197,6 @@ const fetchCities = async () => {
   }
 }
 
-interface CityOption {
-  label: string
-  value: number
-}
-
 const updateDistricts = async (selectedCity: CityOption) => {
   try {
     const cityId = selectedCity.value
@@ -189,8 +218,75 @@ onMounted(() => {
   fetchCities()
 })
 
-const onSubmit = () => {
-  console.log('Form submitted:', form.value)
+// Add this interface for API error responses
+interface ApiError {
+  response?: {
+    data?: {
+      message?: string
+      status?: string
+    }
+    status?: number
+  }
+}
+
+const onSubmit = async () => {
+  try {
+    let avatarBase64 = null;
+    
+    // Handle avatar file
+    if (form.value.avatar instanceof File) {
+      const reader = new FileReader();
+      avatarBase64 = await new Promise((resolve) => {
+        reader.onload = (e) => {
+          const result = e.target?.result as string;
+          console.log('Image converted to base64');
+          resolve(result);
+        };
+        reader.readAsDataURL(form.value.avatar as File);
+      });
+    }
+
+    const formData = {
+      ...form.value,
+      avatar: avatarBase64, // Send base64 string
+      city: typeof form.value.city === 'object' ? form.value.city.value : form.value.city,
+      district: typeof form.value.district === 'object' ? form.value.district.value : form.value.district,
+    };
+
+    console.log('Sending registration data...');
+    const response = await api.post('/kaan.php?action=register', formData);
+
+    if (response.data.status === 'success') {
+      // Show success message with avatar URL if available
+      const successMessage = response.data.avatar_url 
+        ? `Registration successful! Avatar saved at: ${response.data.avatar_url}`
+        : 'Registration successful! You can now login.';
+
+      $q.notify({
+        type: 'positive',
+        message: successMessage,
+        position: 'top',
+      });
+      
+      router.push('/login');
+    }
+  } catch (error: unknown) {
+    console.error('Registration error:', error);
+
+    const apiError = error as ApiError
+    let errorMessage = 'Registration failed'
+
+    if (apiError.response?.data?.message) {
+      errorMessage = apiError.response.data.message
+    }
+
+    $q.notify({
+      type: 'negative',
+      message: errorMessage,
+      position: 'top',
+      timeout: 3000,
+    })
+  }
 }
 </script>
 
