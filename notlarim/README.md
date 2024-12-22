@@ -20,3 +20,5 @@
 ```
 
 - Register sayfasında alertler,kurallar yeniden gözden geçirilecek.
+
+- örnek postman ile http isteği yapılacak.

@@ -151,7 +151,7 @@ const form = ref({
 // Şehirleri API'den çek
 const fetchCities = async () => {
   try {
-    const response = await api.get('/api.php')
+    const response = await api.get('/kaan.php?action=provinces')
     if (response.data && response.data.status === 'success') {
       cities.value = response.data.data.map((city: { id: number; il_adi: string }) => ({
         label: city.il_adi,
@@ -171,7 +171,7 @@ interface CityOption {
 const updateDistricts = async (selectedCity: CityOption) => {
   try {
     const cityId = selectedCity.value
-    const response = await api.get(`/api.php?il_id=${cityId}`)
+    const response = await api.get(`/kaan.php?action=districts&id=${cityId}`)
     if (response.data && response.data.status === 'success') {
       districts.value = response.data.data.map((district: { id: number; ilce_adi: string }) => ({
         label: district.ilce_adi,
