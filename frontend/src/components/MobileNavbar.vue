@@ -108,21 +108,27 @@
           />
         </q-item>
         <!-- Mobile Profile Section -->
-        <q-item-label header class="text-weight-bold">Profile</q-item-label>
-        <q-item clickable :to="{ path: '/profile' }" v-close-popup>
-          <q-item-section avatar>
-            <q-avatar>
-              <img src="https://cdn.quasar.dev/img/boy-avatar.png" />
-            </q-avatar>
-          </q-item-section>
-          <q-item-section>John Doe</q-item-section>
-        </q-item>
-
-        <q-item clickable @click="handleLogout" v-close-popup>
-          <q-item-section avatar>
-            <q-icon name="logout" />
-          </q-item-section>
-          <q-item-section>Logout</q-item-section>
+        <q-item>
+          <q-btn-dropdown class="full-width" color="secondary" label="Hesap">
+            <div class="row no-wrap q-pa-md">
+              <div class="column items-center full-width">
+                <div class="text-h6 q-mb-md">Profile</div>
+                <q-avatar size="72px">
+                  <img src="https://cdn.quasar.dev/img/boy-avatar.png" />
+                </q-avatar>
+                <div class="text-subtitle1 q-mt-md q-mb-xs">John Doe</div>
+                <q-btn
+                  color="primary"
+                  label="Logout"
+                  push
+                  size="sm"
+                  v-close-popup
+                  @click="handleLogout"
+                  class="q-mt-sm"
+                />
+              </div>
+            </div>
+          </q-btn-dropdown>
         </q-item>
       </q-list>
     </q-scroll-area>
