@@ -5,8 +5,11 @@
     <q-tabs v-model="tab" shrink>
       <q-route-tab to="/" name="home" label="Ana Sayfa" />
       <q-route-tab to="/vendors" name="vendors" label="Mağzalar" />
-      <q-route-tab to="/register" name="register" label="Register" />
-      <q-route-tab to="/login" name="login" label="Login" />
+      <!-- Show these only when user is not logged in -->
+      <template v-if="!user">
+        <q-route-tab to="/register" name="register" label="Register" />
+        <q-route-tab to="/login" name="login" label="Login" />
+      </template>
     </q-tabs>
 
     <!--Language Choice -->
@@ -44,20 +47,20 @@
     />
 
     <!-- Shopping Cart -->
-    <q-btn dense round icon="shopping_bag" class="q-ml-md">
+    <q-btn v-if="user"  dense round icon="shopping_bag" class="q-ml-md">
       <q-badge color="red" floating>4</q-badge>
     </q-btn>
 
     <!-- Profile Dropdown -->
-    <q-btn-dropdown class="glossy q-ml-md" color="secondary" label="Hesap">
+    <q-btn-dropdown v-if="user" class="glossy q-ml-md" color="secondary" :label="user.username">
       <div class="row no-wrap q-pa-md">
         <div class="column items-center">
           <div class="text-h6 q-mb-md">Profile</div>
           <q-avatar size="72px">
             <img src="https://cdn.quasar.dev/img/boy-avatar.png" />
           </q-avatar>
-          <div class="text-subtitle1 q-mt-md q-mb-xs">John Doe</div>
-          <q-btn color="primary" label="Logout" push size="sm" v-close-popup />
+          <div class="text-subtitle1 q-mt-md q-mb-xs">{{ user.first_name }} {{ user.last_name }}</div>
+          <q-btn color="negative" label="Logout" push size="sm" v-close-popup @click="handleLogout" />
         </div>
       </div>
     </q-btn-dropdown>
@@ -66,6 +69,15 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+import { useAuth } from '../composables/useAuth'
 
-const tab = ref<string>('tab1')
+const router = useRouter()
+const { user, logout } = useAuth()
+const tab = ref('home')
+
+const handleLogout = async () => {
+  await logout()
+  router.push('/login')
+}
 </script>

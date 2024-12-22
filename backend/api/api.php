@@ -221,6 +221,48 @@ switch ($method) {
                         }
                         break;
 
+                    case 'login':
+                        try {
+                            $jsonData = file_get_contents('php://input');
+                            $data = json_decode($jsonData, true);
+
+                            if (!isset($data['email']) || !isset($data['password'])) {
+                                throw new Exception('Email and password are required');
+                            }
+
+                            $sql = "SELECT id, first_name, last_name, username, email, password, user_type FROM users WHERE email = ?";
+                            $stmt = $conn->prepare($sql);
+                            $stmt->bind_param("s", $data['email']);
+                            
+                            if (!$stmt->execute()) {
+                                throw new Exception('Login failed');
+                            }
+
+                            $result = $stmt->get_result();
+                            $user = $result->fetch_assoc();
+
+                            if (!$user || !password_verify($data['password'], $user['password'])) {
+                                throw new Exception('Invalid email or password');
+                            }
+
+                            // Remove password from response
+                            unset($user['password']);
+                            
+                            echo json_encode([
+                                'status' => 'success',
+                                'message' => 'Login successful',
+                                'user' => $user
+                            ]);
+
+                        } catch (Exception $e) {
+                            http_response_code(401);
+                            echo json_encode([
+                                'status' => 'error',
+                                'message' => $e->getMessage()
+                            ]);
+                        }
+                        break;
+
                         // ... existing cases ...
                 }
                 break;

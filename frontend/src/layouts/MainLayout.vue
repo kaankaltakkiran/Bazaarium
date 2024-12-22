@@ -38,14 +38,20 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useQuasar } from 'quasar'
+import { useAuth } from '../composables/useAuth'
 //Navbar Components
 import DesktopNavbar from 'components/DesktopNavbar.vue'
 import MobileNavbar from 'components/MobileNavbar.vue'
 
 const $q = useQuasar()
+const { initAuth } = useAuth()
 const leftDrawerOpen = ref(false)
+
+onMounted(() => {
+  initAuth()
+})
 
 function toggleLeftDrawer() {
   leftDrawerOpen.value = !leftDrawerOpen.value

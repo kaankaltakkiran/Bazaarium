@@ -1,160 +1,76 @@
 <!-- components/MobileNavbar.vue -->
 <template>
-  <!-- Mobile Drawer Start -->
-  <q-drawer
-    :model-value="modelValue"
-    @update:model-value="$emit('update:modelValue', $event)"
-    side="left"
-    overlay
-    behavior="mobile"
-    bordered
-    :breakpoint="1023"
-  >
-    <q-scroll-area class="fit">
-      <q-item-label class="text-primary text-center" header>Bazaarium</q-item-label>
-      <q-list padding>
-        <q-item
-          clickable
-          :to="{ path: '/' }"
-          v-close-popup
-          :active="route.path === '/'"
-          active-class="text-primary"
-        >
-          <q-item-section avatar> <q-icon name="home" /> </q-item-section>
-          <q-item-section>Ana Sayfa</q-item-section>
-        </q-item>
+  <q-drawer v-model="drawer" side="left" bordered>
+    <q-list padding>
+      <!-- Regular navigation items -->
+      <q-item clickable v-ripple to="/">
+        <q-item-section avatar><q-icon name="home" /></q-item-section>
+        <q-item-section>Ana Sayfa</q-item-section>
+      </q-item>
 
-        <q-item
-          clickable
-          :to="{ path: '/vendors' }"
-          v-close-popup
-          :active="route.path === '/vendors'"
-          active-class="text-primary"
-        >
-          <q-item-section avatar>
-            <q-icon name="store" />
-          </q-item-section>
-          <q-item-section>Mağzalar</q-item-section>
-        </q-item>
+      <q-item clickable v-ripple to="/vendors">
+        <q-item-section avatar><q-icon name="store" /></q-item-section>
+        <q-item-section>Mağzalar</q-item-section>
+      </q-item>
 
-        <q-item
-          clickable
-          :to="{ path: '/register' }"
-          v-close-popup
-          :active="route.path === '/register'"
-          active-class="text-primary"
-        >
-          <q-item-section avatar>
-            <q-icon name="person_add" />
-          </q-item-section>
+      <!-- Auth items - show only when not logged in -->
+      <template v-if="!user">
+        <q-item clickable v-ripple to="/register">
+          <q-item-section avatar><q-icon name="person_add" /></q-item-section>
           <q-item-section>Register</q-item-section>
         </q-item>
 
-        <q-item
-          clickable
-          :to="{ path: '/login' }"
-          v-close-popup
-          :active="route.path === '/login'"
-          active-class="text-primary"
-        >
-          <q-item-section avatar>
-            <q-icon name="login" />
-          </q-item-section>
+        <q-item clickable v-ripple to="/login">
+          <q-item-section avatar><q-icon name="login" /></q-item-section>
           <q-item-section>Login</q-item-section>
         </q-item>
+      </template>
 
+      <!-- User profile - show only when logged in -->
+      <template v-if="user">
         <q-item>
-          <!--Language Choice -->
-          <q-btn-dropdown
-            push
-            glossy
-            no-caps
-            icon="language"
-            color="primary"
-            label="Türkçe"
-            class="full-width"
-          >
-            <q-list>
-              <q-item clickable v-close-popup>
-                <q-item-section>
-                  <q-item-label>English</q-item-label>
-                </q-item-section>
-              </q-item>
+          <q-item-section avatar>
+            <q-avatar>
+              <img src="https://cdn.quasar.dev/img/boy-avatar.png" />
+            </q-avatar>
+          </q-item-section>
+          <q-item-section>
+            <q-item-label>{{ user.first_name }} {{ user.last_name }}</q-item-label>
+            <q-item-label caption>{{ user.email }}</q-item-label>
+          </q-item-section>
+        </q-item>
 
-              <q-item clickable v-close-popup>
-                <q-item-section>
-                  <q-item-label>German</q-item-label>
-                </q-item-section>
-              </q-item>
-
-              <q-item clickable v-close-popup>
-                <q-item-section>
-                  <q-item-label>İtaliano</q-item-label>
-                </q-item-section>
-              </q-item>
-            </q-list>
-          </q-btn-dropdown>
+        <q-item clickable v-ripple @click="handleLogout">
+          <q-item-section avatar><q-icon name="logout" /></q-item-section>
+          <q-item-section>Logout</q-item-section>
         </q-item>
-        <!-- Dark Mode Toggle -->
-        <q-item>
-          <q-btn
-            flat
-            dense
-            @click="$q.dark.toggle()"
-            :icon="$q.dark.isActive ? 'light_mode' : 'dark_mode'"
-            :label="$q.dark.isActive ? 'Koyu' : 'Açık'"
-            :no-caps="true"
-            class="full-width"
-          />
-        </q-item>
-        <!-- Mobile Profile Section -->
-        <q-item>
-          <q-btn-dropdown class="full-width" color="secondary" label="Hesap">
-            <div class="row no-wrap q-pa-md">
-              <div class="column items-center full-width">
-                <div class="text-h6 q-mb-md">Profile</div>
-                <q-avatar size="72px">
-                  <img src="https://cdn.quasar.dev/img/boy-avatar.png" />
-                </q-avatar>
-                <div class="text-subtitle1 q-mt-md q-mb-xs">John Doe</div>
-                <q-btn
-                  color="primary"
-                  label="Logout"
-                  push
-                  size="sm"
-                  v-close-popup
-                  @click="handleLogout"
-                  class="q-mt-sm"
-                />
-              </div>
-            </div>
-          </q-btn-dropdown>
-        </q-item>
-      </q-list>
-    </q-scroll-area>
+      </template>
+    </q-list>
   </q-drawer>
-  <!-- Mobile Drawer End -->
 </template>
 
 <script setup lang="ts">
-import { useRouter, useRoute } from 'vue-router'
+import { computed } from 'vue'
+import { useRouter } from 'vue-router'
+import { useAuth } from '../composables/useAuth'
 
-const router = useRouter()
-const route = useRoute()
-
-defineProps<{
+const props = defineProps<{
   modelValue: boolean
 }>()
 
-defineEmits<{
-  (e: 'update:modelValue', value: boolean): void
-}>()
+const emit = defineEmits(['update:modelValue'])
+const router = useRouter()
+const { user, logout } = useAuth()
 
-const handleLogout = () => {
-  // Add your logout logic here
-  console.log('Logging out...')
-  // After logout, redirect to home or login page
-  router.push('/')
+const drawer = computed({
+  get: () => props.modelValue,
+  set: (value) => emit('update:modelValue', value)
+})
+
+const handleLogout = async () => {
+  await logout()
+  emit('update:modelValue', false)
+  router.push('/login')
 }
 </script>
 
